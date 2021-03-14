@@ -1,0 +1,7 @@
+{
+    email email_here
+}
+
+domain_here {
+    reverse_proxy app:3000
+}

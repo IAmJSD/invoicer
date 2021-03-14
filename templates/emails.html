@@ -1,0 +1,125 @@
+<div class="container" style="padding-top: 2em; padding-bottom: 2em;">
+    {{ if ne .Error "" }}
+    <div class="notification is-danger">{{ .Error }}</div>
+    {{ end }}
+
+    <h1 class="title">E-mail Addresses</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>From Name</th>
+                <th>From E-mail Address</th>
+                <th>Hostname</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range $index, $val := .Records }}
+            <tr>
+                <th>
+                    {{ if eq $val.FromName "" }}No Name Specified{{ else }}{{ $val.FromName }}{{ end }}
+                    <div id="{{ $index }}-name" style="display: none;">{{ $val.FromName }}</div>
+                </th>
+                <th id="{{ $index }}-email">{{ $val.FromEmail }}</th>
+                <th>{{ $val.SMTPHost }}</th>
+                <th id="{{ $index }}-username">{{ if eq $val.Username "" }}{{ $val.FromEmail }}{{ else }}{{ $val.Username }}{{ end }}</th>
+                <th>
+                    <div class="buttons">
+                        <a class="button is-danger" href="javascript:deleteRecord({{ $index }})">Delete</a>
+                        <a class="button is-info" href="javascript:openUsernamePanel({{ $index }})">Update Username</a>
+                        <a class="button is-info" href="javascript:openPasswordPanel({{ $index }})">Update Password</a>
+                    </div>
+                </th>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    <hr />
+
+    <form method="POST">
+        <h1 class="title">Insert E-mail Address</h1>
+        <div class="field">
+            <label>
+                From E-mail:
+                <input class="input" type="email" placeholder="From E-mail" name="email" id="insert-email" oninput="validateForm()">
+            </label>
+        </div>
+        <div class="field">
+            <label>
+                From Name:
+                <input class="input" type="text" placeholder="From Name" name="name">
+            </label>
+        </div>
+        <div class="field">
+            <label>
+                Hostname:
+                <input class="input" type="text" placeholder="Hostname" name="hostname" id="insert-hostname" oninput="validateForm()">
+            </label>
+        </div>
+        <div class="field">
+            <label>
+                Username:
+                <input class="input" type="text" placeholder="Username" name="username">
+            </label>
+        </div>
+        <div class="field">
+            <label>
+                Password:
+                <input class="input" type="password" placeholder="Password" name="password">
+            </label>
+        </div>
+        <div class="field">
+            <button class="button is-success" type="submit" id="insert-button" disabled>Insert</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal" id="username-form-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Change Username</p>
+            <button class="delete" aria-label="close" onclick="closeUsernamePanel()"></button>
+        </header>
+        <form method="POST">
+            <section class="modal-card-body">
+                <input class="input" type="hidden" name="name" id="username-form-name">
+                <input class="input" type="hidden" name="email" id="username-form-email">
+                <label>
+                    Username:
+                    <input class="input" type="text" placeholder="Username" name="username" id="username-form-username" oninput="validateUsername()">
+                </label>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" id="username-form-submit" type="submit">Change Username</button>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="password-form-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Change Username</p>
+            <button class="delete" aria-label="close" onclick="closePasswordPanel()"></button>
+        </header>
+        <form method="POST">
+            <section class="modal-card-body">
+                <input class="input" type="hidden" name="name" id="password-form-name">
+                <input class="input" type="hidden" name="email" id="password-form-email">
+                <label>
+                    Password:
+                    <input class="input" type="password" placeholder="Password" name="password">
+                </label>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" type="submit">Change Password</button>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<script src="/scripts/emails.js"></script>

@@ -1,0 +1,159 @@
+<div class="modal" id="user-edit-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Edit User</p>
+            <button class="delete" aria-label="close" onclick="closeEditPanel()"></button>
+        </header>
+        <form method="POST">
+            <section class="modal-card-body">
+                <input class="input" type="hidden" name="job_id" id="edit-job-id">
+                <div class="field">
+                    <label class="label">Subject:</label>
+                    <div class="control">
+                        <input id="edit-job-subject" class="input" type="text" placeholder="Subject" name="subject">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">E-mail Content:</label>
+                    <div class="control">
+                        <textarea id="edit-job-email" class="textarea" placeholder="E-mail Content" name="email_content"></textarea>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>
+                        Markdown:
+                        <div class="control">
+                            <textarea id="edit-job-markdown" class="textarea" placeholder="Markdown" name="markdown" oninput="validateNotBlank()"></textarea>
+                        </div>
+                    </label>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success" id="edit-job-submit" type="submit">Edit Job</button>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<div class="container" style="padding-top: 2em; padding-bottom: 2em;">
+    {{ if ne .Error "" }}
+    <div class="notification is-danger">{{ .Error }}</div>
+    {{ end }}
+
+    <h1 class="title">Invoice Jobs</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Job ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Jobs }}
+            <tr>
+                <th>{{ .JobID }}</th>
+                <th>
+                    {{ if eq .FromName "" }}
+                    {{ .FromEmail }}
+                    {{ else }}
+                    {{ .FromName }} &lt;{{ .FromEmail }}&gt;
+                    {{ end }}
+                </th>
+                <th>
+                    {{ if eq .ToName "" }}
+                    {{ .ToEmail }}
+                    {{ else }}
+                    {{ .ToName }} &lt;{{ .ToEmail }}&gt;
+                    {{ end }}
+                </th>
+                <th>{{ .Subject }}</th>
+                <th>
+                    <div id="{{ .JobID }}-content" style="display: none;">{{ .EmailContent }}</div>
+                    <div id="{{ .JobID }}-markdown" style="display: none;">{{ .Markdown }}</div>
+                    <div id="{{ .JobID }}-subject" style="display: none;">{{ .Subject }}</div>
+
+                    <div class="buttons">
+                        <a class="button is-danger" href="javascript:deleteJob({{ .JobID }})">Delete</a>
+                        <a class="button is-info" href="javascript:editJob({{ .JobID }})">Update E-mail Contents</a>
+                    </div>
+                </th>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    {{ if ne (len .Emails) 0 }}
+    <hr />
+
+    <form method="POST">
+        <h1 class="title">Insert Invoice Job</h1>
+        <div class="field">
+            <label class="label">From E-mail:</label>
+            <div class="control">
+                <div class="select">
+                    <select name="from_email">
+                        {{ range .Emails }}
+                        {{ if eq .FromName "" }}
+                        <option>{{ .FromEmail }}</option>
+                        {{ else }}
+                        <option>{{ .FromName }} &lt;{{ .FromEmail }}&gt;</option>
+                        {{ end }}
+                        {{ end }}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Date:</label>
+            <div class="control">
+                <input class="input" type="number" min="1" max="28" placeholder="Date" name="date">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Months Between Trigger:</label>
+            <div class="control">
+                <input class="input" type="number" min="1" placeholder="Months Between Trigger" name="months_between_trigger">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">To Name:</label>
+            <div class="control">
+                <input id="insert-name" class="input" type="text" placeholder="Name" name="to_name" oninput="validateCreationForm()">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">To E-mail Address:</label>
+            <div class="control">
+                <input id="insert-email" class="input" type="email" placeholder="To E-Mail Address" name="to_email" oninput="validateCreationForm()">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Subject:</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="Subject" name="subject" oninput="validateCreationForm()">
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">E-mail Content:</label>
+            <div class="control">
+                <textarea class="textarea" placeholder="E-mail Content" name="email_content"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label">Markdown:</label>
+            <div class="control">
+                <textarea id="insert-markdown" class="textarea" placeholder="Markdown" name="markdown" oninput="validateCreationForm()"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <button class="button is-success" type="submit" id="insert-button" disabled>Insert</button>
+        </div>
+    </form>
+    {{ end }}
+</div>
+
+<script src="/scripts/jobs.js"></script>

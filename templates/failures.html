@@ -1,0 +1,19 @@
+<div class="container" style="padding-top: 2em; padding-bottom: 2em;">
+    <h1 class="title">Failures</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Failure Time</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ range .Failures }}
+            <tr>
+                <th>{{ .FailureTime }}</th>
+                <th>{{ .Message }}</th>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+</div>

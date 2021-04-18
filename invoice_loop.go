@@ -21,6 +21,9 @@ func invoiceLoop() {
 			email, err := db.SelectOneEmailAddress(context.TODO(), v.FromEmail, v.FromName)
 			if err != nil {
 				// Record doesn't exist at the moment.
+				if err = db.InsertFailure(context.TODO(), err); err != nil {
+					panic(err)
+				}
 				continue
 			}
 

@@ -56,7 +56,7 @@ func main() {
 	loadTemplateRoutes(app)
 
 	// Start the invoice loop.
-	go invoiceLoop()
+	invoiceLoop()
 
 	// Runs the server.
 	log.Fatal(app.Listen(":3000"))

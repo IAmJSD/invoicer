@@ -26,7 +26,7 @@ func parseEmail(raw string) (string, string, bool) {
 	if raw[l-1] != '>' {
 		return "", "", false
 	}
- 	return raw[i+1:l-1], name, true
+	return raw[i+1 : l-1], name, true
 }
 
 // Loads the routes involving templates.

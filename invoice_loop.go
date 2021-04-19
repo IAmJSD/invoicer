@@ -11,7 +11,8 @@ import (
 )
 
 func invoiceLoop() {
-	for {
+	var f func()
+	f = func() {
 		jobs, err := db.GetPendingInvoiceJobs(context.TODO())
 		if err != nil {
 			panic(err)
@@ -85,6 +86,9 @@ func invoiceLoop() {
 				}
 			}
 		}
-		time.Sleep(time.Second * 5)
+
+		// Set a timer to re-run this function.
+		time.AfterFunc(time.Second*5, f)
 	}
+	f()
 }

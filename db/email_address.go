@@ -57,7 +57,11 @@ func (e *EmailAddress) Send(Recipients []string, Body []byte) error {
 	}
 
 	// Handle authentication.
-	auth := smtp.PlainAuth("", e.Username, e.Password, hostname)
+	username := e.Username
+	if username == "" {
+		username = e.FromEmail
+	}
+	auth := smtp.PlainAuth("", username, e.Password, hostname)
 
 	// Send the e-mail.
 	return smtp.SendMail(hostname+":"+strconv.Itoa(port), auth, e.FromEmail, Recipients, Body)
@@ -159,11 +163,15 @@ func SelectOneEmailAddress(ctx context.Context, FromEmail, FromName string) (*Em
 		FromEmail: FromEmail,
 		FromName:  FromName,
 	}
+	var username *string
 	if err := conn.QueryRow(ctx,
 		"SELECT username, password, smtp_host FROM email_addresses"+
 			" WHERE from_email = $1 AND from_name = $2", FromEmail, FromName,
-	).Scan(&e.Username, &e.Password, &e.SMTPHost); err != nil {
+	).Scan(&username, &e.Password, &e.SMTPHost); err != nil {
 		return nil, err
+	}
+	if username != nil {
+		e.Username = *username
 	}
 	return &e, nil
 }

@@ -80,7 +80,9 @@ func invoiceLoop() {
 
 			// Mark the job as complete so it doesn't run again.
 			if err = v.MarkAsComplete(context.TODO()); err != nil {
-				panic(err)
+				if err = db.InsertFailure(context.TODO(), err); err != nil {
+					panic(err)
+				}
 			}
 		}
 		time.Sleep(time.Second * 5)
